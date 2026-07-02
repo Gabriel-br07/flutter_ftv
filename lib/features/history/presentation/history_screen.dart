@@ -37,29 +37,31 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     final historyState = ref.watch(historyControllerProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Histórico')),
-      body: historyState.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : historyState.events.isEmpty
-          ? const Center(
-              child: Text(
-                'Nenhum evento registrado',
-                style: TextStyle(fontSize: 18),
+      body: SafeArea(
+        child: historyState.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : historyState.events.isEmpty
+            ? Center(
+                child: Text(
+                  'Nenhum evento registrado',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              )
+            : ListView.separated(
+                key: const Key('historyScreen'),
+                padding: const EdgeInsets.all(16),
+                itemCount: historyState.events.length,
+                separatorBuilder: (_, _) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final event = historyState.events[index];
+                  return ListTile(
+                    leading: const Icon(Icons.event_note),
+                    title: Text(Labels.historyEventLabel(event.type)),
+                    trailing: Text(_time(event.createdAt)),
+                  );
+                },
               ),
-            )
-          : ListView.separated(
-              key: const Key('historyScreen'),
-              padding: const EdgeInsets.all(16),
-              itemCount: historyState.events.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final event = historyState.events[index];
-                return ListTile(
-                  leading: const Icon(Icons.event_note),
-                  title: Text(Labels.historyEventLabel(event.type)),
-                  trailing: Text(_time(event.createdAt)),
-                );
-              },
-            ),
+      ),
     );
   }
 }

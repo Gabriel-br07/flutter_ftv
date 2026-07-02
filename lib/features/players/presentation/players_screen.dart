@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ftv/core/domain/ids.dart';
+import 'package:flutter_ftv/core/widgets/responsive_button_row.dart';
 import 'package:flutter_ftv/features/matches/domain/rotation_state.dart';
 import 'package:flutter_ftv/features/pairs/domain/pair.dart';
 import 'package:flutter_ftv/features/pairs/domain/pair_origin.dart';
@@ -282,10 +283,10 @@ class _DraftList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (players.isEmpty && pairs.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Nenhum jogador cadastrado',
-          style: TextStyle(fontSize: 18),
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       );
     }
@@ -353,7 +354,9 @@ class _PlayerCard extends StatelessWidget {
             Expanded(
               child: Text(
                 '$position. ${player.name}',
-                style: const TextStyle(fontSize: 18),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
             if (waiting)
@@ -374,10 +377,9 @@ class _PlayerCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       'Prioridade',
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
                         color: scheme.onTertiaryContainer,
                         fontWeight: FontWeight.w700,
-                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -419,7 +421,11 @@ class _PairCard extends StatelessWidget {
         leading: Icon(Icons.groups, color: scheme.primary),
         title: Text(
           names,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
@@ -433,10 +439,9 @@ class _PairCard extends StatelessWidget {
                 ),
                 child: Text(
                   manual ? 'Escolhida' : 'Automática',
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: fg,
                     fontWeight: FontWeight.w700,
-                    fontSize: 12,
                   ),
                 ),
               ),
@@ -479,22 +484,17 @@ class _BottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
+            ResponsiveButtonRow(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    key: const Key('formPairsButton'),
-                    onPressed: canFormPairs ? onFormPairs : null,
-                    child: const Text('Formar duplas'),
-                  ),
+                OutlinedButton(
+                  key: const Key('formPairsButton'),
+                  onPressed: canFormPairs ? onFormPairs : null,
+                  child: const Text('Formar duplas'),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton(
-                    key: const Key('manualPairButton'),
-                    onPressed: canChoosePair ? onChoosePair : null,
-                    child: const Text('Escolher dupla'),
-                  ),
+                OutlinedButton(
+                  key: const Key('manualPairButton'),
+                  onPressed: canChoosePair ? onChoosePair : null,
+                  child: const Text('Escolher dupla'),
                 ),
               ],
             ),
