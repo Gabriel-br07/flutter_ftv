@@ -12,6 +12,14 @@ class AppTheme {
     return _base(scheme);
   }
 
+  static ThemeData dark() {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: _seed,
+      brightness: Brightness.dark,
+    );
+    return _base(scheme);
+  }
+
   static ThemeData _base(ColorScheme scheme) {
     return ThemeData(
       useMaterial3: true,

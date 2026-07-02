@@ -12,6 +12,9 @@ class FtvApp extends StatelessWidget {
       title: 'Pelada de Futevôlei',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      // No themeMode: the MaterialApp default (ThemeMode.system) already
+      // follows the Android system dark-mode setting.
+      darkTheme: AppTheme.dark(),
       routerConfig: appRouter,
     );
   }
