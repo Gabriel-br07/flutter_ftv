@@ -5,6 +5,7 @@ import 'package:flutter_ftv/core/domain/ids.dart';
 import 'package:flutter_ftv/core/theme/session_status_chip.dart';
 import 'package:flutter_ftv/core/theme/status_style.dart';
 import 'package:flutter_ftv/core/utils/labels.dart';
+import 'package:flutter_ftv/core/widgets/responsive_button_row.dart';
 import 'package:flutter_ftv/features/courts/presentation/courts_controller.dart';
 import 'package:flutter_ftv/features/courts/presentation/widgets/court_card.dart';
 import 'package:flutter_ftv/features/courts/presentation/widgets/queue_section.dart';
@@ -213,28 +214,33 @@ class _CourtsScreenState extends ConsumerState<CourtsScreen> {
         ),
     ];
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                rotation.session.name,
-                style: Theme.of(context).textTheme.headlineSmall,
+    return SafeArea(
+      bottom: false,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  rotation.session.name,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            SessionStatusChip(status: rotation.session.status),
-          ],
-        ),
-        Text(Labels.targetPoints(rotation.session.targetPoints)),
-        const SizedBox(height: 16),
-        for (final court in rotation.courts)
-          _buildCourtCard(rotation, names, court.id, court.name),
-        const SizedBox(height: 8),
-        QueueSection(players: queueViews, waitingPairNames: waitingPairNames),
-      ],
+              const SizedBox(width: 8),
+              SessionStatusChip(status: rotation.session.status),
+            ],
+          ),
+          Text(Labels.targetPoints(rotation.session.targetPoints)),
+          const SizedBox(height: 16),
+          for (final court in rotation.courts)
+            _buildCourtCard(rotation, names, court.id, court.name),
+          const SizedBox(height: 8),
+          QueueSection(players: queueViews, waitingPairNames: waitingPairNames),
+        ],
+      ),
     );
   }
 
@@ -315,22 +321,17 @@ class _BottomActions extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child: ResponsiveButtonRow(
           children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: canUndo ? onUndo : null,
-                icon: const Icon(Icons.undo),
-                label: const Text('Desfazer última ação'),
-              ),
+            OutlinedButton.icon(
+              onPressed: canUndo ? onUndo : null,
+              icon: const Icon(Icons.undo),
+              label: const Text('Desfazer última ação'),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: onFinish,
-                icon: const Icon(Icons.flag),
-                label: const Text('Finalizar pelada'),
-              ),
+            FilledButton.icon(
+              onPressed: onFinish,
+              icon: const Icon(Icons.flag),
+              label: const Text('Finalizar pelada'),
             ),
           ],
         ),

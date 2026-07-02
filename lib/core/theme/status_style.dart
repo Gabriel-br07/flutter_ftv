@@ -121,11 +121,19 @@ class StatusChip extends StatelessWidget {
             Icon(style.icon, size: 16, color: style.foreground),
             const SizedBox(width: 6),
           ],
-          Text(
-            label,
-            style: TextStyle(
-              color: style.foreground,
-              fontWeight: FontWeight.w600,
+          // Flexible + ellipsis: a no-op inside an unbounded parent (e.g. a
+          // Wrap, where the chip keeps its intrinsic width), but lets the label
+          // truncate instead of overflowing when a parent bounds the width.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+              style: TextStyle(
+                color: style.foreground,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ftv/app/providers.dart';
+import 'package:flutter_ftv/core/layout/app_breakpoints.dart';
 import 'package:flutter_ftv/core/theme/session_status_chip.dart';
 import 'package:flutter_ftv/core/utils/labels.dart';
 import 'package:flutter_ftv/features/sessions/domain/session.dart';
@@ -36,21 +37,23 @@ class SessionsListScreen extends ConsumerWidget {
         icon: const Icon(Icons.add),
         label: const Text('Criar pelada'),
       ),
-      body: sessionsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) =>
-            const Center(child: Text('Não foi possível carregar as peladas')),
-        data: (sessions) {
-          if (sessions.isEmpty) {
-            return const _EmptyState();
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: sessions.length,
-            itemBuilder: (context, index) =>
-                _SessionTile(session: sessions[index]),
-          );
-        },
+      body: SafeArea(
+        child: sessionsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) =>
+              const Center(child: Text('Não foi possível carregar as peladas')),
+          data: (sessions) {
+            if (sessions.isEmpty) {
+              return const _EmptyState();
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: sessions.length,
+              itemBuilder: (context, index) =>
+                  _SessionTile(session: sessions[index]),
+            );
+          },
+        ),
       ),
     );
   }
@@ -74,6 +77,7 @@ class _SessionTile extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: const Text('Finalizar pelada?'),
         content: const Text(
           'Depois de finalizar, você ainda poderá ver esta pelada na lista e '
@@ -103,6 +107,7 @@ class _SessionTile extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: const Text('Excluir pelada?'),
         content: const Text(
           'Essa ação vai remover esta pelada e seus participantes deste '
@@ -139,21 +144,7 @@ class _SessionTile extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      session.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SessionStatusChip(status: session.status),
-                ],
-              ),
+              _CardHeader(session: session),
               const SizedBox(height: 4),
               Text(
                 '${Labels.targetPoints(session.targetPoints)}  •  '
@@ -196,22 +187,73 @@ class _SessionTile extends ConsumerWidget {
   }
 }
 
+/// Card header showing the session name and its status chip. On roomy widths
+/// the chip sits inline (title takes priority and ellipsizes); on narrow widths
+/// the chip drops below the title so it never squashes the name.
+class _CardHeader extends StatelessWidget {
+  const _CardHeader({required this.session});
+
+  final Session session;
+
+  @override
+  Widget build(BuildContext context) {
+    final titleStyle = Theme.of(
+      context,
+    ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600);
+    final chip = SessionStatusChip(status: session.status);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < AppBreakpoints.compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                session.name,
+                style: titleStyle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              chip,
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(
+              child: Text(
+                session.name,
+                style: titleStyle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            chip,
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.sports_volleyball, size: 72),
-            SizedBox(height: 16),
+            const Icon(Icons.sports_volleyball, size: 72),
+            const SizedBox(height: 16),
             Text(
               'Nenhuma pelada criada',
-              style: TextStyle(fontSize: 18),
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
           ],

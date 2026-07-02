@@ -81,17 +81,11 @@ class _CreateSessionScreenState extends ConsumerState<CreateSessionScreen> {
               segments: const [
                 ButtonSegment(
                   value: 15,
-                  label: Text(
-                    'Jogo até 15 pontos',
-                    key: Key('targetPoints15Option'),
-                  ),
+                  label: Text('15 pontos', key: Key('targetPoints15Option')),
                 ),
                 ButtonSegment(
                   value: 18,
-                  label: Text(
-                    'Jogo até 18 pontos',
-                    key: Key('targetPoints18Option'),
-                  ),
+                  label: Text('18 pontos', key: Key('targetPoints18Option')),
                 ),
               ],
               selected: {_targetPoints},

@@ -107,31 +107,42 @@ class _QueueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: style.background,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (style.icon != null) ...[
-            Icon(style.icon, size: 16, color: style.foreground),
-            const SizedBox(width: 6),
-          ],
-          Text(
-            text,
-            style: TextStyle(
-              color: style.foreground,
-              fontWeight: FontWeight.w600,
+    // Cap a single chip's width so a very long name (or an "A & B" pair chip)
+    // can't exceed the row inside the Wrap; the label then ellipsizes.
+    final maxChipWidth = MediaQuery.sizeOf(context).width - 48;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxChipWidth),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: style.background,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (style.icon != null) ...[
+              Icon(style.icon, size: 16, color: style.foreground),
+              const SizedBox(width: 6),
+            ],
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                style: TextStyle(
+                  color: style.foreground,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
-          if (badge != null) ...[
-            const SizedBox(width: 8),
-            _RoleBadge(label: badge!, style: style),
+            if (badge != null) ...[
+              const SizedBox(width: 8),
+              _RoleBadge(label: badge!, style: style),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -156,10 +167,9 @@ class _RoleBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: style.background,
           fontWeight: FontWeight.w700,
-          fontSize: 11,
         ),
       ),
     );
